@@ -4,8 +4,13 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.PersonIdent;
+import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
+import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Formatter;
 
 public class GitUtils {
@@ -40,5 +45,24 @@ public class GitUtils {
 
     public static String getEmail(String name) {
         return String.format("%s@abc.com", name);
+    }
+
+    public static boolean isGitRepository(Path dirPath) {
+        File gitDir = dirPath.resolve(".git")
+                .toAbsolutePath()
+                .normalize().toFile();
+
+        FileRepositoryBuilder builder = new FileRepositoryBuilder();
+        try (Repository repo = builder.setGitDir(gitDir)
+                .readEnvironment() // 扫描环境变量
+                .findGitDir()     // 查找.git目录
+                .build()) {
+
+            // 如果build()没有抛出异常，并且getDirectory()不为空，则是仓库
+            return repo.getDirectory() != null && repo.getDirectory().exists();
+        } catch (IOException e) {
+            // 异常说明不是仓库或无法访问
+            return false;
+        }
     }
 }
