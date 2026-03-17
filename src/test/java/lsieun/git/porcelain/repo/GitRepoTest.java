@@ -26,15 +26,7 @@ class GitRepoTest {
         System.out.println(info);
     }
 
-    @Test
-    void testCreateEmptyRepo() throws GitAPIException {
-        File gitDir = PathManager.getLocalRepo();
 
-        // create the directory
-        try (Git git = Git.init().setDirectory(gitDir).call()) {
-            System.out.println("Create Empty Repository: " + git.getRepository().getDirectory());
-        }
-    }
 
     @Test
     void testCloneRemoteRepo() throws GitAPIException {
